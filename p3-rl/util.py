@@ -298,7 +298,7 @@ class Counter(dict):
     >>> a = Counter()
     >>> a['test'] = 2
     >>> print a['test']
-    
+    2
 
     This is very useful for counting things without initializing their counts,
     see for example:

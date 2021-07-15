@@ -271,7 +271,7 @@ class GameState:
 
 SCARED_TIME = 40    # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7  # How close ghosts must be to Pacman to kill
-TIME_PENALTY = 1  # Number of points lost each round
+# TIME_PENALTY = 1  # Number of points lost each round
 
 
 class ClassicGameRules:
@@ -291,6 +291,8 @@ class ClassicGameRules:
         game.state = initState
         self.initialState = initState.deepCopy()
         self.quiet = quiet
+        # print('*'*8)
+        # print(game.state.)
         return game
 
     def process(self, state, game):
@@ -554,6 +556,8 @@ def readCommand(argv):
                       help='Turns on exception handling and timeouts during games', default=False)
     parser.add_option('--timeout', dest='timeout', type='int',
                       help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
+    parser.add_option('--viscosity', dest='viscosity', type='float',
+                      help=default('define time penalty'), default=1)
 
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -606,6 +610,7 @@ def readCommand(argv):
     args['record'] = options.record
     args['catchExceptions'] = options.catchExceptions
     args['timeout'] = options.timeout
+    args['viscosity'] = options.viscosity
 
     # Special case: recorded games don't use the runGames method or args structure
     if options.gameToReplay != None:
@@ -672,7 +677,7 @@ def replayGame(layout, actions, display):
     display.finish()
 
 
-def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, catchExceptions=False, timeout=30):
+def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, catchExceptions=False, timeout=30, viscosity=1):
     import __main__
     __main__.__dict__['_display'] = display
 
@@ -702,6 +707,7 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
                 '-'.join([str(t) for t in time.localtime()[1:6]])
             f = file(fname, 'w')
             components = {'layout': layout, 'actions': game.moveHistory}
+
             pickle.dump(components, f)
             f.close()
 
@@ -731,6 +737,9 @@ if __name__ == '__main__':
     > python pacman.py --help
     """
     args = readCommand(sys.argv[1:])  # Get game components based on input
+    global TIME_PENALTY
+    TIME_PENALTY = args["viscosity"]
+
     runGames(**args)
 
     # import cProfile
