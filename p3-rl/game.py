@@ -522,7 +522,7 @@ class GameStateData:
         #self.capsules = []
         self.capsules = layout.capsules[:]
         self.layout = layout
-        self.score = 0
+        self.score = 50
         self.scoreChange = 0
 
         self.agentStates = []

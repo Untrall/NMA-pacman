@@ -43,6 +43,7 @@ from game import GameStateData
 from game import Game
 from game import Directions
 from game import Actions
+from graphicsDisplay import *
 from util import nearestPoint
 from util import manhattanDistance
 import util
@@ -119,6 +120,13 @@ class GameState:
 
         # Time passes
         if agentIndex == 0:
+            if state.getScore()<20 and state.getScore()>0:
+                TIME_PENALTY = 5
+                #print(state.getScore(),TIME_PENALTY)
+            else:
+                TIME_PENALTY = 1
+                #print(state.getScore(),TIME_PENALTY)
+
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
             if random.random() >= food_pop:
                 x_posi = int(random.random()*state.data.layout.width)
@@ -126,6 +134,8 @@ class GameState:
                 if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
                     state.data.food[x_posi][y_posi] = True
                     state.data._foodAdded = (x_posi, y_posi)
+            
+                
         else:
             GhostRules.decrementTimer(state.data.agentStates[agentIndex])
 
@@ -452,6 +462,8 @@ class GhostRules:
     decrementTimer = staticmethod(decrementTimer)
 
     def checkDeath(state, agentIndex):
+        #print(PacmanRules.state.score)
+        #print(state.getScore())
         pacmanPosition = state.getPacmanPosition()
         if agentIndex == 0:  # Pacman just moved; Anyone can kill him
             for index in range(1, len(state.data.agentStates)):
@@ -464,6 +476,15 @@ class GhostRules:
             ghostPosition = ghostState.configuration.getPosition()
             if GhostRules.canKill(pacmanPosition, ghostPosition):
                 GhostRules.collide(state, ghostState, agentIndex)
+        if state.getScore()<=0:
+            state.data._lose = True
+            print("生命值小于0，gg")
+        if state.getScore()>500:
+            state.data._win = True
+            #print("win!")
+        
+
+        
     checkDeath = staticmethod(checkDeath)
 
     def collide(state, ghostState, agentIndex):
@@ -487,6 +508,10 @@ class GhostRules:
         ghostState.configuration = ghostState.start
     placeGhost = staticmethod(placeGhost)
 
+    # def checkdie(state):
+    #     if state.data.score<0:
+    #         state.data._lose = True
+    #         print(state.data.score)
 #############################
 # FRAMEWORK TO START A GAME #
 #############################
@@ -747,9 +772,9 @@ if __name__ == '__main__':
     global TIME_PENALTY
     TIME_PENALTY = args["viscosity"]
     global food_pop
-    food_pop = 0
+    food_pop = 0.8
     runGames(**args)
-
+    
     # import cProfile
     # cProfile.run("runGames( **args )")
     pass
