@@ -120,7 +120,6 @@ class GameState:
         # Time passes
         if agentIndex == 0:
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-
             if random.random() >= food_pop:
                 x_posi = int(random.random()*state.data.layout.width)
                 y_posi = int(random.random()*state.data.layout.height)
@@ -130,6 +129,7 @@ class GameState:
         else:
             GhostRules.decrementTimer(state.data.agentStates[agentIndex])
 
+        #random.seed()
         # Resolve multi-agent effects
         GhostRules.checkDeath(state, agentIndex)
 
@@ -391,7 +391,6 @@ class PacmanRules:
             state.data.food = state.data.food.copy()
             state.data.food[x][y] = False
             state.data._foodEaten = position
-
             # TODO: cache numFood?
             numFood = state.getNumFood()
             if numFood == 0 and not state.data._lose:
