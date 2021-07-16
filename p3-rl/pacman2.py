@@ -385,12 +385,19 @@ class PacmanRules:
         pacmanState.configuration = pacmanState.configuration.generateSuccessor(
             vector)
 
+        
         # Eat
         next = pacmanState.configuration.getPosition()
         nearest = nearestPoint(next)
-        if manhattanDistance(nearest, next) <= 0.5:
+        if state.getScore()<10:
+            if manhattanDistance(nearest, next) <= 1:
+                PacmanRules.consume(nearest, state)
+                
+        else:
+            if manhattanDistance(nearest, next) <= 0.5:
             # Remove food
-            PacmanRules.consume(nearest, state)
+                PacmanRules.consume(nearest, state)
+                #print(manhattanDistance(nearest, next))
     applyAction = staticmethod(applyAction)
 
     def consume(position, state):
