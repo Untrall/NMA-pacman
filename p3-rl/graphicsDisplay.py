@@ -215,7 +215,9 @@ class PacmanGraphics:
         self.food = self.drawFood(layout.food)
         self.capsules = self.drawCapsules(layout.capsules)
         refresh()
-
+    # def drawNewdots(self,state):
+    #     layout = self.layout
+    #     self.food = self.drawFood(layout.food)
     def drawAgentObjects(self, state):
         self.agentImages = []  # (agentState, image)
         for index, agent in enumerate(state.agentStates):
@@ -262,6 +264,7 @@ class PacmanGraphics:
         self.infoPane.updateScore(newState.score)
         if 'ghostDistances' in dir(newState):
             self.infoPane.updateGhostDistances(newState.ghostDistances)
+        #self.drawNewdots(newState)
 
     def make_window(self, width, height):
         grid_width = (width-1) * self.gridSize
@@ -581,6 +584,7 @@ class PacmanGraphics:
                 color = TEAM_COLORS[1]
             imageRow = []
             foodImages.append(imageRow)
+            #print(x)
             for yNum, cell in enumerate(x):
                 if cell:  # There's food here
                     screen = self.to_screen((xNum, yNum))
@@ -592,6 +596,7 @@ class PacmanGraphics:
                 else:
                     imageRow.append(None)
         return foodImages
+        
 
     def drawCapsules(self, capsules):
         capsuleImages = {}

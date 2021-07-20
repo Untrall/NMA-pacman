@@ -20,6 +20,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
+from matplotlib.pyplot import step
 from util import *
 import time
 import os
@@ -30,8 +31,11 @@ import sys
 # Parts worth reading #
 #######################
 
+global stopCounter
+stopCounter =0
 
 class Agent:
+    
     """
     An agent must define a getAction method, but may also define the
     following methods which will be called if they exist:
@@ -120,6 +124,9 @@ class Configuration:
         dx, dy = vector
         direction = Actions.vectorToDirection(vector)
         if direction == Directions.STOP:
+            global stopCounter
+            stopCounter+=1
+            #print(stopCounter)
             direction = self.direction  # There is no stop direction
         return Configuration((x + dx, y+dy), direction)
 
@@ -649,9 +656,11 @@ class Game:
 
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
-
+        global step
+        step=0
         while not self.gameOver:
             # Fetch the next agent
+            step +=1
             agent = self.agents[agentIndex]
             move_time = 0
             skip_action = False
@@ -761,7 +770,11 @@ class Game:
 
             if _BOINC_ENABLED:
                 boinc.set_fraction_done(self.getProgress())
-
+        print("time:",step)
+        print('stopCounter:',stopCounter)
+        print("actual move_step:",step-stopCounter)
+        
+            
         # inform a learning agent of the game result
         for agentIndex, agent in enumerate(self.agents):
             if "final" in dir(agent):
@@ -776,3 +789,7 @@ class Game:
                     self.unmute()
                     return
         self.display.finish()
+        #print(self.numMoves)
+        
+        
+        

@@ -39,6 +39,12 @@ code to run a game.  This file is divided into three sections:
 To play your first game, type 'python pacman.py' from the command line.
 The keys are 'a', 's', 'd', and 'w' to move (or arrow keys).  Have fun!
 """
+from ast import Num
+from tkinter.constants import N
+from graphicsUtils import *
+import math
+import time
+from game import Directions
 from game import GameStateData
 from game import Game
 from game import Directions
@@ -80,6 +86,8 @@ class GameState:
 
     # static variable keeps track of which states have had getLegalActions called
     explored = set()
+    global step
+    step = 0
 
     def getAndResetExplored():
         tmp = GameState.explored.copy()
@@ -117,7 +125,8 @@ class GameState:
             PacmanRules.applyAction(state, action)
         else:                # A ghost is moving
             GhostRules.applyAction(state, action, agentIndex)
-
+        global Num1
+        Num1 =0
         # Time passes
         if agentIndex == 0:
             if state.getScore()<20 and state.getScore()>0:
@@ -126,14 +135,20 @@ class GameState:
             else:
                 TIME_PENALTY = 1
                 #print(state.getScore(),TIME_PENALTY)
-
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            if random.random() >= food_pop:
-                x_posi = int(random.random()*state.data.layout.width)
-                y_posi = int(random.random()*state.data.layout.height)
-                if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
-                    state.data.food[x_posi][y_posi] = True
-                    state.data._foodAdded = (x_posi, y_posi)
+            # if random.random() >= food_pop:
+            #     x_posi = int(random.random()*state.data.layout.width)
+            #     y_posi = int(random.random()*state.data.layout.height)
+            #     if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
+            #         state.data.food[x_posi][y_posi] = True
+            #         state.data._foodAdded = (x_posi, y_posi)
+            #         print(state.data._foodAdded)
+                    # screen = self.to_screen((x_posi, y_posi))
+                    # dot = circle(screen,
+                    #              FOOD_SIZE * self.gridSize,
+                    #              outlineColor=color, fillColor=color,
+                    #              width=1)
+                    # imageRow.append(dot)
             
                 
         else:
@@ -142,12 +157,13 @@ class GameState:
         #random.seed()
         # Resolve multi-agent effects
         GhostRules.checkDeath(state, agentIndex)
-
+        
         # Book keeping
         state.data._agentMoved = agentIndex
         state.data.score += state.data.scoreChange
         GameState.explored.add(self)
         GameState.explored.add(state)
+        
         return state
 
     def getLegalPacmanActions(self):
@@ -781,6 +797,8 @@ if __name__ == '__main__':
     global food_pop
     food_pop = 0.8
     runGames(**args)
+
+    
     
     # import cProfile
     # cProfile.run("runGames( **args )")
