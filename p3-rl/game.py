@@ -413,6 +413,7 @@ class GameStateData:
             self.layout = prevState.layout
             self._eaten = prevState._eaten
             self.score = prevState.score
+            # self._counter = prevState._counter
 
         self._foodEaten = None
         self._foodAdded = None
@@ -421,6 +422,7 @@ class GameStateData:
         self._lose = False
         self._win = False
         self.scoreChange = 0
+        # self._counter = 0
 
     def deepCopy(self):
         state = GameStateData(self)
@@ -657,7 +659,7 @@ class Game:
         agentIndex = self.startingIndex
         numAgents = len(self.agents)
         global step
-        step=0
+        step = 0
         while not self.gameOver:
             # Fetch the next agent
             step +=1
@@ -770,12 +772,7 @@ class Game:
 
             if _BOINC_ENABLED:
                 boinc.set_fraction_done(self.getProgress())
-        print("time:",step)
-        
-        
-        
-        
-        
+        # print("time:", step)
             
         # inform a learning agent of the game result
         for agentIndex, agent in enumerate(self.agents):
