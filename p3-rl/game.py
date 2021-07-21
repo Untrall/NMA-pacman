@@ -20,19 +20,16 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-from matplotlib.pyplot import step
+from matplotlib.pyplot import flag, step
 from util import *
 import time
 import os
 import traceback
 import sys
-
 #######################
 # Parts worth reading #
 #######################
 
-global stopCounter
-stopCounter =0
 
 class Agent:
     
@@ -111,7 +108,7 @@ class Configuration:
 
     def __str__(self):
         return "(x,y)="+str(self.pos)+", "+str(self.direction)
-
+    
     def generateSuccessor(self, vector):
         """
         Generates a new configuration reached by translating the current
@@ -120,16 +117,19 @@ class Configuration:
 
         Actions are movement vectors.
         """
+        
         x, y = self.pos
         dx, dy = vector
         direction = Actions.vectorToDirection(vector)
         if direction == Directions.STOP:
-            global stopCounter
-            stopCounter+=1
-            #print(stopCounter)
+            
+            
             direction = self.direction  # There is no stop direction
+            
         return Configuration((x + dx, y+dy), direction)
+    
 
+    
 
 class AgentState:
     """
@@ -771,8 +771,10 @@ class Game:
             if _BOINC_ENABLED:
                 boinc.set_fraction_done(self.getProgress())
         print("time:",step)
-        print('stopCounter:',stopCounter)
-        print("actual move_step:",step-stopCounter)
+        
+        
+        
+        
         
             
         # inform a learning agent of the game result

@@ -129,6 +129,7 @@ class GameState:
         Num1 =0
         # Time passes
         if agentIndex == 0:
+            
             if state.getScore()<20 and state.getScore()>0:
                 TIME_PENALTY = 5
                 #print(state.getScore(),TIME_PENALTY)
@@ -378,6 +379,7 @@ class PacmanRules:
     the classic game rules.
     """
     PACMAN_SPEED = 1
+    
 
     def getLegalActions(state):
         """
@@ -400,6 +402,11 @@ class PacmanRules:
         vector = Actions.directionToVector(action, PacmanRules.PACMAN_SPEED)
         pacmanState.configuration = pacmanState.configuration.generateSuccessor(
             vector)
+        #movement_penality 
+        
+        if sum(vector)!=0:
+            state.data.scoreChange += STEP_PENALTY
+            print(state.data.scoreChange)
 
         
         # Eat
@@ -428,6 +435,7 @@ class PacmanRules:
             numFood = state.getNumFood()
             if numFood == 0 and not state.data._lose:
                 state.data.scoreChange += 500
+                
                 state.data._win = True
         # Eat capsule
         if(position in state.getCapsules()):
@@ -794,6 +802,8 @@ if __name__ == '__main__':
     args = readCommand(sys.argv[1:])  # Get game components based on input
     global TIME_PENALTY
     TIME_PENALTY = args["viscosity"]
+    global Penalty
+    STEP_PENALTY = -2
     global food_pop
     food_pop = 0.8
     runGames(**args)
