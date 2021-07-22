@@ -13,7 +13,7 @@
 
 
 from game import Directions, Agent, Actions
-
+import pacman4
 import random,util,time
 
 class ValueEstimationAgent(Agent):
@@ -149,6 +149,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         else:
             self.accumTestRewards += self.episodeRewards
         self.episodesSoFar += 1
+        
         if self.episodesSoFar >= self.numTraining:
             # Take off the training wheels
             self.epsilon = 0.0    # no exploration
@@ -216,6 +217,7 @@ class ReinforcementAgent(ValueEstimationAgent):
     def registerInitialState(self, state):
         self.startEpisode()
         if self.episodesSoFar == 0:
+            
             print('Beginning %d episodes of Training' % (self.numTraining))
 
     def final(self, state):
