@@ -1,0 +1,1 @@
+python pacmanstep.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210
