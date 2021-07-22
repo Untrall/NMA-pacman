@@ -460,7 +460,7 @@ class PacmanRules:
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-            if not state.data._lose and total_counter > 200:
+            if (numFood == 0 and not state.data._lose) or total_counter >= 200:
                 # state.data.scoreChange += 500
                 # print('effience',state.getScore()/total_counter)
                 effience_array.append(state.getScore())

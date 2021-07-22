@@ -91,8 +91,6 @@ class GameState:
 
     # static variable keeps track of which states have had getLegalActions called
     explored = set()
-    global step
-    step = 0
 
     def getAndResetExplored():
         tmp = GameState.explored.copy()
@@ -144,23 +142,13 @@ class GameState:
                 TIME_PENALTY = 1
                 # print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            # if random.random() >= food_pop:
-            #     x_posi = int(random.random()*state.data.layout.width/2)
-            #     y_posi = int(random.random()*state.data.layout.height/2)
-            #     if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
-            #         state.data.food[x_posi][y_posi] = True
-            #         state.data._foodAdded = (x_posi, y_posi)
-            #         random_flag[0]=True
-            # print(state.data._foodAdded)
-            # print(random_flag[0],"change")
-            # screen = self.to_screen((x_posi, y_posi))
-            # dot = circle(screen,
-            #              FOOD_SIZE * self.gridSize,
-            #              outlineColor=color, fillColor=color,
-            #              width=1)
-            # imageRow.append(dot)
-
-
+            if random.random() <= food_pop:
+                x_posi = int(random.gauss(0, 5) * state.data.layout.width / 2 + state.data.layout.width / 2)
+                y_posi = int(random.gauss(0, 5) * state.data.layout.height / 2 + state.data.layout.height / 2)
+                if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
+                    state.data.food[x_posi][y_posi] = True
+                    state.data._foodAdded = (x_posi, y_posi)
+                    random_flag[0] = True
         else:
             GhostRules.decrementTimer(state.data.agentStates[agentIndex])
 
@@ -339,6 +327,11 @@ class ClassicGameRules:
         self.quiet = quiet
         # print('*'*8)
         # print(game.state.)
+        global x0
+        global y0
+        temp = game.state.getPacmanPosition()
+        x0 = temp[0]
+        y0 = temp[1]
         return game
 
     def process(self, state, game):
@@ -391,7 +384,6 @@ class PacmanRules:
     the classic game rules.
     """
     PACMAN_SPEED = 1
-
     def getLegalActions(state):
         """
         Returns a list of possible actions.
@@ -438,11 +430,15 @@ class PacmanRules:
 
     applyAction = staticmethod(applyAction)
 
-    random.seed(666)
+    random.seed(3090)
 
     def consume(position, state):
-
+        displacement_temp = 0
+        global displacement
         x, y = position
+        displacement_temp = abs(x - x0) + abs(y - y0)
+        if displacement_temp > displacement:
+            displacement = displacement_temp
         # Eat food
         if state.data.food[x][y]:
             if random_flag[0] == True:  # state.data.scoreChange += 10
@@ -463,7 +459,7 @@ class PacmanRules:
             if not state.data._lose and total_counter > 200:
                 # state.data.scoreChange += 500
                 # print('effience',state.getScore()/total_counter)
-                effience_array.append(state.getScore())
+                effience_array.append(displacement)
                 state.data._win = True
         # Eat capsule
         if (position in state.getCapsules()):
@@ -575,12 +571,6 @@ class GhostRules:
         ghostState.configuration = ghostState.start
 
     placeGhost = staticmethod(placeGhost)
-
-    # def checkdie(state):
-    #     if state.data.score<0:
-    #         state.data._lose = True
-    #         print(state.data.score)
-
 
 #############################
 # FRAMEWORK TO START A GAME #
@@ -849,23 +839,17 @@ if __name__ == '__main__':
     global food_pop
     food_pop = 0.8
     global total_counter
+    global displacement
+    displacement = 0.0
     runGames(**args)
-    # effience_array.sort(reverse=True)
-    # print(effience_array)
     x = [i for i in range(len(effience_array))]
     y = effience_array
 
-    # print(x)
-
-    # print(y)
     plt.figure()
-    # plt.ylim(55,85)
     plt.plot(x, y)
     plt.xlabel('episodes')
     plt.ylabel('score')
-    plt.title('Results')
+    plt.title('Results with varying food regenerating rate')
     plt.show()
 
-    # import cProfile
-    # cProfile.run("runGames( **args )")
     pass
