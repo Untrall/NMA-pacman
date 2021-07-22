@@ -136,13 +136,13 @@ class GameState:
                 TIME_PENALTY = 1
                 #print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            # if random.random() >= food_pop:
-            #     x_posi = int(random.random()*state.data.layout.width)
-            #     y_posi = int(random.random()*state.data.layout.height)
-            #     if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
-            #         state.data.food[x_posi][y_posi] = True
-            #         state.data._foodAdded = (x_posi, y_posi)
-            #         print(state.data._foodAdded)
+            if random.random() >= food_pop:
+                x_posi = int(random.random()*state.data.layout.width/2)
+                y_posi = int(random.random()*state.data.layout.height/2)
+                if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
+                    state.data.food[x_posi][y_posi] = True
+                    state.data._foodAdded = (x_posi, y_posi)
+                    print(state.data._foodAdded)
                     # screen = self.to_screen((x_posi, y_posi))
                     # dot = circle(screen,
                     #              FOOD_SIZE * self.gridSize,

@@ -60,7 +60,8 @@ import time
 import random
 import os
 
-
+global random_flag
+random_flag=[False,False,False]
 ###################################################
 # YOUR INTERFACE TO THE PACMAN WORLD: A GameState #
 ###################################################
@@ -130,6 +131,8 @@ class GameState:
         global Num1
         Num1 = 0
         # Time passes
+        
+
         if agentIndex == 0:
 
             if state.getScore() < 20 and state.getScore() > 0:
@@ -139,13 +142,15 @@ class GameState:
                 TIME_PENALTY = 1
                 # print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            # if random.random() >= food_pop:
-            #     x_posi = int(random.random()*state.data.layout.width)
-            #     y_posi = int(random.random()*state.data.layout.height)
-            #     if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
-            #         state.data.food[x_posi][y_posi] = True
-            #         state.data._foodAdded = (x_posi, y_posi)
-            #         print(state.data._foodAdded)
+            if random.random() >= food_pop:
+                x_posi = int(random.random()*state.data.layout.width/2)
+                y_posi = int(random.random()*state.data.layout.height/2)
+                if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
+                    state.data.food[x_posi][y_posi] = True
+                    state.data._foodAdded = (x_posi, y_posi)
+                    random_flag[0]=True
+                    print(state.data._foodAdded)
+                    print(random_flag[0],"change")
             # screen = self.to_screen((x_posi, y_posi))
             # dot = circle(screen,
             #              FOOD_SIZE * self.gridSize,
@@ -408,10 +413,13 @@ class PacmanRules:
         pacmanState.configuration = pacmanState.configuration.generateSuccessor(
             vector)
         # movement_penality
+        global total_counter
+        total_counter += 1
+        print(total_counter)
 
         if sum(vector) != 0:
             state.data.scoreChange += STEP_PENALTY
-            print(state.data.scoreChange)
+            #print(state.data.scoreChange)
 
         # Eat
         next = pacmanState.configuration.getPosition()
@@ -431,20 +439,29 @@ class PacmanRules:
     random.seed(666)
 
     def consume(position, state):
+        
         x, y = position
         # Eat food
         if state.data.food[x][y]:
-            # state.data.scoreChange += 10
-            state.data.scoreChange += random.randrange(0, 4)
+            if random_flag[0]==True:# state.data.scoreChange += 10
+                print("change->Flase")
+                state.data.scoreChange += int(random.uniform(0,4))
+                random_flag[0]=False
+                
+            else:
+                #print("change1")
+                state.data.scoreChange += 10
+                
+
             state.data.food = state.data.food.copy()
             state.data.food[x][y] = False
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-#            if numFood == 0 and not state.data._lose:
-#                state.data.scoreChange += 500
+            if numFood == 0 and not state.data._lose:
+               #state.data.scoreChange += 500
 
-#                state.data._win = True
+               state.data._win = True
         # Eat capsule
         if (position in state.getCapsules()):
             state.data.capsules.remove(position)
@@ -776,6 +793,8 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
             rules.quiet = False
         game = rules.newGame(layout, pacman, ghosts,
                              gameDisplay, beQuiet, catchExceptions)
+        global total_counter
+        total_counter = 0
         game.run()
         if not beQuiet:
             games.append(game)
@@ -823,6 +842,7 @@ if __name__ == '__main__':
     STEP_PENALTY = -1
     global food_pop
     food_pop = 0.8
+    global total_counter
     runGames(**args)
 
     # import cProfile
