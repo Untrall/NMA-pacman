@@ -129,8 +129,6 @@ class GameState:
             PacmanRules.applyAction(state, action)
         else:  # A ghost is moving
             GhostRules.applyAction(state, action, agentIndex)
-        global Num1
-        Num1 = 0
         # Time passes
 
         if agentIndex == 0:
@@ -143,8 +141,8 @@ class GameState:
                 # print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
             if random.random() <= food_pop:
-                x_posi = int(random.gauss(0, 5) * state.data.layout.width / 2 + state.data.layout.width / 2)
-                y_posi = int(random.gauss(0, 5) * state.data.layout.height / 2 + state.data.layout.height / 2)
+                x_posi = int(random.gauss(0, 0.05) * state.data.layout.width / 2 + state.data.layout.width / 2)
+                y_posi = int(random.gauss(0, 0.05) * state.data.layout.height / 2 + state.data.layout.height / 2)
                 if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
                     state.data.food[x_posi][y_posi] = True
                     state.data._foodAdded = (x_posi, y_posi)
@@ -436,9 +434,10 @@ class PacmanRules:
         displacement_temp = 0
         global displacement
         x, y = position
-        displacement_temp = abs(x - x0) + abs(y - y0)
-        if displacement_temp > displacement:
-            displacement = displacement_temp
+        if total_counter >= 35:  # remove the temporary period
+            displacement_temp = abs(x - x0) + abs(y - y0)
+            if displacement_temp > displacement:
+                displacement = displacement_temp
         # Eat food
         if state.data.food[x][y]:
             if random_flag[0] == True:  # state.data.scoreChange += 10
@@ -456,7 +455,7 @@ class PacmanRules:
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-            if not state.data._lose and total_counter > 200:
+            if (numFood == 0 and not state.data._lose) and total_counter > 200:
                 # state.data.scoreChange += 500
                 # print('effience',state.getScore()/total_counter)
                 effience_array.append(displacement)
@@ -837,18 +836,18 @@ if __name__ == '__main__':
     global STEP_PENALTY
     STEP_PENALTY = -1
     global food_pop
-    food_pop = 0.8
+    food_pop = 0.1
     global total_counter
     global displacement
     displacement = 0.0
     runGames(**args)
-    x = [i for i in range(len(effience_array))]
-    y = effience_array
+    xx = [i for i in range(len(effience_array))]
+    yy = effience_array
 
     plt.figure()
-    plt.plot(x, y)
-    plt.xlabel('episodes')
-    plt.ylabel('score')
+    plt.plot(xx, yy)
+    plt.xlabel('episodes(200 train & 10 demo)')
+    plt.ylabel('score achieved within limited steps')
     plt.title('Results with varying food regenerating rate')
     plt.show()
 
