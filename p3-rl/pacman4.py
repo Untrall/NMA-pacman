@@ -60,6 +60,7 @@ import time
 import random
 import os
 import matplotlib.pyplot as plt
+random.seed(23432423)
 
 global random_flag
 random_flag=[False,False,False]
@@ -144,14 +145,14 @@ class GameState:
                 TIME_PENALTY = 1
                 # print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            # if random.random() >= food_pop:
-            #     x_posi = int(random.random()*state.data.layout.width/2)
-            #     y_posi = int(random.random()*state.data.layout.height/2)
-            #     if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
-            #         state.data.food[x_posi][y_posi] = True
-            #         state.data._foodAdded = (x_posi, y_posi)
-            #         random_flag[0]=True
-                    #print(state.data._foodAdded)
+            if random.random() >= food_pop:
+                x_posi = int(random.gauss(0.5,0.05)*state.data.layout.width)
+                y_posi = int(random.gauss(0.5,0.05)*state.data.layout.height)
+                if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
+                    state.data.food[x_posi][y_posi] = True
+                    state.data._foodAdded = (x_posi, y_posi)
+                    random_flag[0]=True
+                    print(state.data._foodAdded)
                     #print(random_flag[0],"change")
             # screen = self.to_screen((x_posi, y_posi))
             # dot = circle(screen,
@@ -346,8 +347,10 @@ class ClassicGameRules:
         Checks to see whether it is time to end the game.
         """
         if state.isWin():
+            effience_array.append(state.getScore())
             self.win(state, game)
         if state.isLose():
+            effience_array.append(state.getScore())
             self.lose(state, game)
 
     def win(self, state, game):
@@ -447,8 +450,8 @@ class PacmanRules:
         if state.data.food[x][y]:
             if random_flag[0]==True:# state.data.scoreChange += 10
                 #print("change->Flase")
-                #state.data.scoreChange += int(random.uniform(0,4))
-                state.data.scoreChange += 3
+                state.data.scoreChange += int(random.uniform(0,4))
+                #state.data.scoreChange += 3
                 random_flag[0]=False
                 
             else:
@@ -461,10 +464,11 @@ class PacmanRules:
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-            if (numFood == 0 and not state.data._lose)or state.getScore()>260:
+            if (numFood == 0 and not state.data._lose)or total_counter>=200:
+            #or state.getScore()>=200:
                 #state.data.scoreChange += 500
                 #print('effience',state.getScore()/total_counter)
-                effience_array.append(total_counter)
+                #effience_array.append(total_counter)
                 state.data._win = True
         # Eat capsule
         if (position in state.getCapsules()):
@@ -541,9 +545,9 @@ class GhostRules:
             if GhostRules.canKill(pacmanPosition, ghostPosition):
                 GhostRules.collide(state, ghostState, agentIndex)
         if state.getScore() <= 0:
-            effience_array.append(total_counter)
+            #effience_array.append(total_counter)
             state.data._lose = True
-            print("生命值小于0，gg")
+            #print("生命值小于0，gg")
 
         # if state.getScore()>260:
         #       state.data._win = True
@@ -561,7 +565,7 @@ class GhostRules:
         else:
             if not state.data._win:
                 state.data.scoreChange -= 500
-                effience_array.append(total_counter)
+                #effience_array.append(total_counter)
                 state.data._lose = True
 
     collide = staticmethod(collide)
@@ -844,23 +848,26 @@ if __name__ == '__main__':
     args = readCommand(sys.argv[1:])  # Get game components based on input
     global TIME_PENALTY
     TIME_PENALTY = args["viscosity"]
-    global Penalty
+    global STEP_PENALTY
     STEP_PENALTY = -1
     global food_pop
-    food_pop = 0.8
+    food_pop = 0.2
     global total_counter
     runGames(**args)
     #effience_array.sort(reverse=True)
     #print(effience_array)
+    print(total_counter)
     x=[i for i in range(len(effience_array))]
     y=effience_array
-        
+    
     #print(x)
     
     #print(y)
     plt.figure()
-    #plt.ylim(55,85)
+    #plt.ylim(-10,10)
     plt.plot(x, y)
+    plt.xlabel("Episodes")  
+    plt.ylabel("Steps")
     
     plt.show()
 
