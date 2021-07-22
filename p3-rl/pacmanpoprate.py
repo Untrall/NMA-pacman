@@ -460,10 +460,10 @@ class PacmanRules:
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-            if not state.data._lose and total_counter > 200:
+            if not state.data._lose and state.getScore() > 260:
                 # state.data.scoreChange += 500
                 # print('effience',state.getScore()/total_counter)
-                effience_array.append(state.getScore())
+                effience_array.append(total_counter)
                 state.data._win = True
         # Eat capsule
         if (position in state.getCapsules()):
@@ -859,10 +859,11 @@ if __name__ == '__main__':
 
     # print(y)
     plt.figure()
+    # plt.ylim(55,85)
     plt.plot(x, y)
     plt.xlabel('episodes(200 trains & 10 demo)')
-    plt.ylabel('score achieved in limited steps')
-    plt.title('Results with limited steps')
+    plt.ylabel('step to achieve the target score')
+    plt.title('Results with a target score')
     plt.show()
 
     # import cProfile
