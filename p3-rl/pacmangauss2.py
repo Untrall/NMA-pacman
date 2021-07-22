@@ -836,7 +836,7 @@ if __name__ == '__main__':
     global STEP_PENALTY
     STEP_PENALTY = -1
     global food_pop
-    food_pop = 0.1
+    food_pop = 0.99
     global total_counter
     global displacement
     displacement = 0.0
@@ -847,7 +847,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(xx, yy)
     plt.xlabel('episodes(200 train & 10 demo)')
-    plt.ylabel('score achieved within limited steps')
+    plt.ylabel('max displacement within limited steps')
     plt.title('Results with varying food regenerating rate')
     plt.show()
 
