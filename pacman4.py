@@ -41,9 +41,6 @@ The keys are 'a', 's', 'd', and 'w' to move (or arrow keys).  Have fun!
 """
 from ast import Num
 from tkinter.constants import N
-
-import numpy as np
-
 from graphicsUtils import *
 import math
 import time
@@ -62,15 +59,12 @@ import types
 import time
 import random
 import os
-import matplotlib.pyplot as plt
 
 global random_flag
-random_flag = [False, False, False]
+random_flag=[False,False,False]
 ###################################################
 # YOUR INTERFACE TO THE PACMAN WORLD: A GameState #
 ###################################################
-global effience_array
-effience_array = []
 
 
 class GameState:
@@ -94,6 +88,8 @@ class GameState:
 
     # static variable keeps track of which states have had getLegalActions called
     explored = set()
+    global step
+    step = 0
 
     def getAndResetExplored():
         tmp = GameState.explored.copy()
@@ -132,7 +128,10 @@ class GameState:
             PacmanRules.applyAction(state, action)
         else:  # A ghost is moving
             GhostRules.applyAction(state, action, agentIndex)
+        global Num1
+        Num1 = 0
         # Time passes
+        
 
         if agentIndex == 0:
 
@@ -143,13 +142,23 @@ class GameState:
                 TIME_PENALTY = 1
                 # print(state.getScore(),TIME_PENALTY)
             state.data.scoreChange += -TIME_PENALTY  # Penalty for waiting around
-            if random.random() <= food_pop:
-                x_posi = int(random.gauss(0, 0.05) * state.data.layout.width / 2 + state.data.layout.width / 2)
-                y_posi = int(random.gauss(0, 0.05) * state.data.layout.height / 2 + state.data.layout.height / 2)
+            if random.random() >= food_pop:
+                x_posi = int(random.random()*state.data.layout.width/2)
+                y_posi = int(random.random()*state.data.layout.height/2)
                 if state.data.food[x_posi][y_posi] == False and state.data.layout.walls[x_posi][y_posi] == False:
                     state.data.food[x_posi][y_posi] = True
                     state.data._foodAdded = (x_posi, y_posi)
-                    random_flag[0] = True
+                    random_flag[0]=True
+                    print(state.data._foodAdded)
+                    print(random_flag[0],"change")
+            # screen = self.to_screen((x_posi, y_posi))
+            # dot = circle(screen,
+            #              FOOD_SIZE * self.gridSize,
+            #              outlineColor=color, fillColor=color,
+            #              width=1)
+            # imageRow.append(dot)
+
+
         else:
             GhostRules.decrementTimer(state.data.agentStates[agentIndex])
 
@@ -328,11 +337,6 @@ class ClassicGameRules:
         self.quiet = quiet
         # print('*'*8)
         # print(game.state.)
-        global x0
-        global y0
-        temp = game.state.getPacmanPosition()
-        x0 = temp[0]
-        y0 = temp[1]
         return game
 
     def process(self, state, game):
@@ -385,6 +389,7 @@ class PacmanRules:
     the classic game rules.
     """
     PACMAN_SPEED = 1
+
     def getLegalActions(state):
         """
         Returns a list of possible actions.
@@ -414,7 +419,7 @@ class PacmanRules:
 
         if sum(vector) != 0:
             state.data.scoreChange += STEP_PENALTY
-            # print(state.data.scoreChange)
+            #print(state.data.scoreChange)
 
         # Eat
         next = pacmanState.configuration.getPosition()
@@ -431,43 +436,31 @@ class PacmanRules:
 
     applyAction = staticmethod(applyAction)
 
-    random.seed(3090)
+    random.seed(666)
 
     def consume(position, state):
+        
         x, y = position
-        global displacement
-        # displacement_temp = 0
-
-        # if total_counter >= 35:  # remove the temporary period
-            # displacement_temp = abs(x - x0) + abs(y - y0)
-            # if displacement_temp > displacement:
-                # displacement = displacement_temp
-
-        displacement_temp = np.sqrt((x - x0)**2 + (y - y0)**2)
-        displacement += displacement_temp
-
         # Eat food
         if state.data.food[x][y]:
-            if random_flag[0] == True:  # state.data.scoreChange += 10
-                # print("change->Flase")
-                # state.data.scoreChange += int(random.uniform(0,4))
-                state.data.scoreChange += 3
-                random_flag[0] = False
-
+            if random_flag[0]==True:# state.data.scoreChange += 10
+                print("change->Flase")
+                state.data.scoreChange += int(random.uniform(0,4))
+                random_flag[0]=False
+                
             else:
-                # print("change1")
+                #print("change1")
                 state.data.scoreChange += 10
+                
 
             state.data.food = state.data.food.copy()
             state.data.food[x][y] = False
             state.data._foodEaten = position
             # TODO: cache numFood?
             numFood = state.getNumFood()
-            if (numFood == 0 and not state.data._lose) or total_counter > 400:
-                # state.data.scoreChange += 500
-                # print('effience',state.getScore()/total_counter)
-                effience_array.append(displacement)
-                state.data._win = True
+            if numFood == 0 and not state.data._lose:
+               #state.data.scoreChange += 500
+               state.data._win = True
         # Eat capsule
         if (position in state.getCapsules()):
             state.data.capsules.remove(position)
@@ -543,13 +536,11 @@ class GhostRules:
             if GhostRules.canKill(pacmanPosition, ghostPosition):
                 GhostRules.collide(state, ghostState, agentIndex)
         if state.getScore() <= 0:
-            effience_array.append(total_counter)
             state.data._lose = True
             print("生命值小于0，gg")
 
-        # if state.getScore()>260:
-        #       state.data._win = True
-
+    #        if state.getScore()>500:
+    #           state.data._win = True
     # print("win!")
 
     checkDeath = staticmethod(checkDeath)
@@ -564,7 +555,6 @@ class GhostRules:
         else:
             if not state.data._win:
                 state.data.scoreChange -= 500
-                effience_array.append(total_counter)
                 state.data._lose = True
 
     collide = staticmethod(collide)
@@ -578,6 +568,12 @@ class GhostRules:
         ghostState.configuration = ghostState.start
 
     placeGhost = staticmethod(placeGhost)
+
+    # def checkdie(state):
+    #     if state.data.score<0:
+    #         state.data._lose = True
+    #         print(state.data.score)
+
 
 #############################
 # FRAMEWORK TO START A GAME #
@@ -798,8 +794,6 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
                              gameDisplay, beQuiet, catchExceptions)
         global total_counter
         total_counter = 0
-        global displacement
-        displacement = 0
         game.run()
         if not beQuiet:
             games.append(game)
@@ -843,22 +837,13 @@ if __name__ == '__main__':
     args = readCommand(sys.argv[1:])  # Get game components based on input
     global TIME_PENALTY
     TIME_PENALTY = args["viscosity"]
-    global STEP_PENALTY
+    global Penalty
     STEP_PENALTY = -1
     global food_pop
-    food_pop = 0.9
+    food_pop = 0.8
     global total_counter
-    global displacement
-    displacement = 0.0
     runGames(**args)
-    xx = [i for i in range(len(effience_array))]
-    yy = effience_array
 
-    plt.figure()
-    plt.plot(xx, yy)
-    plt.xlabel('episodes(200 train & 10 demo)')
-    plt.ylabel('max displacement within limited steps')
-    plt.title('Results with varying food regenerating rate')
-    plt.show()
-
+    # import cProfile
+    # cProfile.run("runGames( **args )")
     pass

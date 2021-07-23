@@ -436,15 +436,15 @@ class PacmanRules:
     def consume(position, state):
         x, y = position
         global displacement
-        # displacement_temp = 0
+        displacement_temp = 0
 
-        # if total_counter >= 35:  # remove the temporary period
-            # displacement_temp = abs(x - x0) + abs(y - y0)
-            # if displacement_temp > displacement:
-                # displacement = displacement_temp
+        if total_counter >= 35:  # remove the temporary period
+            displacement_temp = abs(x - x0) + abs(y - y0)
+            if displacement_temp > displacement:
+                displacement = displacement_temp
 
-        displacement_temp = np.sqrt((x - x0)**2 + (y - y0)**2)
-        displacement += displacement_temp
+        # displacement_temp = np.sqrt((x - x0)**2 + (y - y0)**2)
+        # displacement += displacement_temp
 
         # Eat food
         if state.data.food[x][y]:
@@ -846,7 +846,7 @@ if __name__ == '__main__':
     global STEP_PENALTY
     STEP_PENALTY = -1
     global food_pop
-    food_pop = 0.9
+    food_pop = 0.1
     global total_counter
     global displacement
     displacement = 0.0

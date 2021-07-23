@@ -1,0 +1,48 @@
+python pacman10.py -p ApproximateQAgent -a extractor=SimpleExtractor -l mediumGrid -x 200 -n -210 
+
+
+python pacman10.py -p ApproximateQAgent -x 2000 -n 2010 -l smallGrid 
+
+
+
+python pacman10.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210 -l mediumGrid 
+
+
+
+python pacmanstep.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210
+
+
+
+
+python pacmanscore.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210
+
+
+
+python pacmangauss2.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210 
+
+
+python pacmangauss2.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210 -l new3
+
+python pacmangauss3.py -p ApproximateQAgent -a extractor=SimpleExtractor -x 200 -n 210 -l new3
+
+learning rules
+
+
+P10
+X axis is episode, Y axis is total step of pacman mouse moves within achieving certain score. 
+The vary end of the episodes are the test episodes, which reverses the pacman mouse has learned how to survive longer.
+
+next slide
+P11
+The food is regenerating with different probability as a Gaussian distribution. The center of distribution is at the center of the map. 
+The probability for left to right is 0.1, 0.5, 0.9, as the  probability increases, the score achieved by pacman mouse within certain step will be higher
+
+
+next slide
+P12 
+The food is regenerating as a two picks gaussian distribution. One of  the center is  at one fourth left sides. Another center is at right one fourth sides. 
+The reward of food in left side is 1, but in right side is 10. 
+After 300times of training, the pacman mouse has learned to get food from the right sids. 
+
+i will now hand over to lihui 
+
